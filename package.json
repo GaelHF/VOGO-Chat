@@ -1,0 +1,16 @@
+{
+  "name": "vogo-chat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "GaelHF (https://gael.vogo.dev/)",
+  "license": "ISC",
+  "description": "Socket.io Instant Chat",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "socket.io": "^4.8.1"
+  },
+  "type": "module"
+}

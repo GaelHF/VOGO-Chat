@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOGO Chat</title>
+    <link rel="stylesheet" href="style/style.css" type="text/css" media="screen">
+    <link rel="icon" type="image/x-icon" href="assets/icon.ico">
+    <script src = "/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <script>
+        const socket = io("ws://localhost:8000");
+
+        function newMessage(message, pseudo, type) {
+            //Notification Sound
+            if(document.getElementById("pseudo").value != pseudo) {
+                const sound = document.getElementById("notificationSoundEffect");
+                sound.play();
+            }
+
+            const div = document.createElement("div");
+            div.classList.add("message");
+            if(type === "user") div.classList.add(type);
+
+            const p = document.createElement("p");
+            p.innerText = message;
+            const a = document.createElement("a");
+            a.innerText = pseudo;
+
+            div.appendChild(p);
+            div.appendChild(a);
+            document.getElementById("message_body").appendChild(div);
+        };
+
+        function sendMessage() {
+            //Send Sound
+            const sound = document.getElementById("sendSoundEffect");
+            sound.play();
+
+            const messageInput = document.getElementById("message");
+            const pseudoInput = document.getElementById("pseudo");
+            
+            if(messageInput.value != "" && pseudoInput.value != "") {
+                socket.emit("new message", {message: messageInput.value, pseudo: pseudoInput.value});
+                newMessage(messageInput.value, pseudoInput.value, "");
+                messageInput.value = "";
+            }
+        };
+
+        socket.on("new message", (args) => {
+            newMessage(args.message, args.pseudo, "user")
+        });
+
+        socket.on("database emptied", () => {
+            const messageBody = document.getElementById("message_body");
+            while (messageBody.firstChild) {
+                messageBody.removeChild(messageBody.firstChild);
+            }
+        });
+
+        socket.on("configured title", (title) => {
+            document.title = title;
+            document.getElementById("title").innerText = title;
+        });
+
+
+        //Send with key ENTER
+        function handleKeyEvents(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyEvents);
+     </script>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">VOGO Chat</h1>
+        </div>
+        <div class="body" id="message_body">
+		</div>
+        <div class="footer">
+            <div class="body">
+                <div class="input">
+                    <input id="pseudo" type="text" name="message" placeholder="Name">
+                    <input id="message" type="text" name="message" placeholder="Message">
+                    <button class="inputMessage" onclick="sendMessage()">></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="soundEffect">
+        <audio id="sendSoundEffect" src="assets/sounds/send.ogg"></audio>
+        <audio id="notificationSoundEffect" src="assets/sounds/notification.mp3"></audio>
+    </div>
+</body>
+</html>
