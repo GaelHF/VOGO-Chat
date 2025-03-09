@@ -33,6 +33,9 @@ Install dependencies
 ```
 
 Configure your preferences in **/config,json**
+```json
+"port": "default" (is 8000)
+```
 
 Execute the server with **/Execute Local.cmd**
 
